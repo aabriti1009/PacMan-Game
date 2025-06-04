@@ -4,6 +4,8 @@
  */
 package pacman.database;
 
+import com.sun.jdi.connect.spi.Connection;
+
 /**
  *
  * @author cex
