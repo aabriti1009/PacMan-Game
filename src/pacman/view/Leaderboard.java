@@ -66,9 +66,9 @@ public class Leaderboard extends javax.swing.JFrame {
 
         jLabel1.setBackground(new java.awt.Color(102, 0, 102));
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(204, 0, 204));
+        jLabel1.setForeground(new java.awt.Color(102, 0, 102));
         jLabel1.setText("     LEADERBOARD");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 23, 334, 57));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 20, 334, 57));
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/profile (2).png"))); // NOI18N
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(122, 176, -1, -1));

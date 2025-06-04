@@ -111,13 +111,13 @@
           <Font name="Helvetica Neue" size="36" style="1"/>
         </Property>
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="cc" green="0" red="cc" type="rgb"/>
+          <Color blue="66" green="0" red="66" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="     LEADERBOARD"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="75" y="23" width="334" height="57"/>
+          <AbsoluteConstraints x="80" y="20" width="334" height="57"/>
         </Constraint>
       </Constraints>
     </Component>
