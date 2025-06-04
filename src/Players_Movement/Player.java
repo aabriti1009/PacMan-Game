@@ -3,83 +3,72 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class Player {
-    private int x, y;           // Current position
-    private int size = 30;      // Size of Pac-Man (width & height)
-    private int speed = 5;      // Movement speed per update
+    private int x, y;
+    private int size = 30;
+    private int speed = 5;
 
-    private int dx = 0;         // Movement in x-direction
-    private int dy = 0;         // Movement in y-direction
+    private int dx = 0, dy = 0;
 
-    // Mouth animation variables
-    private int mouthAngle = 45;        // Mouth opening size in degrees
-    private boolean mouthOpening = true; // Toggle for mouth open/close animation
+    private int mouthAngle = 45;
+    private boolean mouthOpening = true;
 
     public Player(int startX, int startY) {
         this.x = startX;
         this.y = startY;
     }
 
-    // Draw Pac-Man with animated mouth (wedge missing)
     public void draw(Graphics g) {
         g.setColor(Color.YELLOW);
 
-        // Animate mouth opening and closing
+        // Animate mouth
         if (mouthOpening) {
             mouthAngle -= 5;
-            if (mouthAngle <= 0) mouthOpening = false;
+            if (mouthAngle <= 5) mouthOpening = false;
         } else {
             mouthAngle += 5;
             if (mouthAngle >= 45) mouthOpening = true;
         }
 
-        // Draw Pac-Man as a yellow arc with mouth opening
-        g.fillArc(x, y, size, size, mouthAngle, 360 - 2 * mouthAngle);
+        // Determine direction angle for mouth
+        int startAngle = 0;
+        if (dx > 0) startAngle = mouthAngle;           // Right
+        else if (dx < 0) startAngle = 180 + mouthAngle; // Left
+        else if (dy > 0) startAngle = 270 + mouthAngle; // Down
+        else if (dy < 0) startAngle = 90 + mouthAngle;  // Up
+
+        // Draw Pac-Man as arc
+        g.fillArc(x, y, size, size, startAngle, 360 - 2 * mouthAngle);
     }
 
-    // Move the player by dx, dy but prevent moving through walls
     public void move(ArrayList<Wall> walls) {
-        // Calculate tentative new position
         int newX = x + dx;
         int newY = y + dy;
 
-        // Create a rectangle for the new position to check collisions
         Rectangle newBounds = new Rectangle(newX, newY, size, size);
 
-        // Check collision with all walls
         for (Wall wall : walls) {
             if (newBounds.intersects(wall.getBounds())) {
-                // Collision detected, cancel movement in that direction
-                // Check each axis separately for smoother collision handling
+                // Try moving only in X direction
+                Rectangle horiz = new Rectangle(newX, y, size, size);
+                Rectangle vert = new Rectangle(x, newY, size, size);
 
-                // Try moving only horizontally
-                Rectangle horizBounds = new Rectangle(newX, y, size, size);
-                if (!horizBounds.intersects(wall.getBounds())) {
-                    x = newX;  // Move horizontally only
+                if (!horiz.intersects(wall.getBounds())) {
+                    x = newX;
                 }
-
-                // Try moving only vertically
-                Rectangle vertBounds = new Rectangle(x, newY, size, size);
-                if (!vertBounds.intersects(wall.getBounds())) {
-                    y = newY;  // Move vertically only
+                if (!vert.intersects(wall.getBounds())) {
+                    y = newY;
                 }
-                return;  // Stop further movement if collision
+                return; // Stop full movement
             }
         }
 
-        // No collision, update position fully
+        // No collision
         x = newX;
         y = newY;
     }
 
-    // Return current bounds (used for collision detection)
-    public Rectangle getBounds() {
-        return new Rectangle(x, y, size, size);
-    }
-
-    // Handle key press to update movement direction
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-
         if (key == KeyEvent.VK_LEFT) {
             dx = -speed;
             dy = 0;
@@ -95,10 +84,8 @@ public class Player {
         }
     }
 
-    // Handle key release to stop movement on released arrow keys
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
-
         if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT) {
             dx = 0;
         }
