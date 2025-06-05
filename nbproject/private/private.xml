@@ -2,7 +2,17 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/Users/cex/Desktop/Pacman/src/pacman/view/Leaderboard.java</file>
+=======
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Dot.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Board.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Game.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Ghost.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Main.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Player.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Wall.java</file>
+>>>>>>> Aabriti_Chapagain
         </group>
     </open-files>
 </project-private>
