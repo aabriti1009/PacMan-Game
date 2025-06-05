@@ -3,8 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Players_Movement/Main.java</file>
-            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Players_Movement/Player.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Dot.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Board.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Game.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Ghost.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Main.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Player.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/PacManGame/src/Playersmovement/Wall.java</file>
         </group>
     </open-files>
 </project-private>
