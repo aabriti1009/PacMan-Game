@@ -19,18 +19,21 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+/**
+ * This class represents the main game board for a Pac-Man-like game.
+ */
 public class Board extends JPanel implements ActionListener {
-
+// Game dimensions and font
     private Dimension d;
     private final Font smallFont = new Font("Helvetica", Font.BOLD, 14);
-
+// Images and colors
     private Image ii;
     private final Color dotColor = new Color(192, 192, 0);
     private Color mazeColor;
-
+ // Game state flags
     private boolean inGame = false;
     private boolean dying = false;
-
+// Constants for game settings
     private final int BLOCK_SIZE = 24;
     private final int N_BLOCKS = 15;
     private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
@@ -38,7 +41,7 @@ public class Board extends JPanel implements ActionListener {
     private final int PACMAN_ANIM_COUNT = 4;
     private final int MAX_GHOSTS = 12;
     private final int PACMAN_SPEED = 6;
-
+// Animation state
     private int pacAnimCount = PAC_ANIM_DELAY;
     private int pacAnimDir = 1;
     private int pacmanAnimPos = 0;
@@ -46,15 +49,15 @@ public class Board extends JPanel implements ActionListener {
     private int pacsLeft, score;
     private int[] dx, dy;
     private int[] ghost_x, ghost_y, ghost_dx, ghost_dy, ghostSpeed;
-
+// Ghost and game stats
     private Image ghost;
     private Image pacman1, pacman2up, pacman2left, pacman2right, pacman2down;
     private Image pacman3up, pacman3down, pacman3left, pacman3right;
     private Image pacman4up, pacman4down, pacman4left, pacman4right;
-
+// Arrays for ghost movement and directions
     private int pacman_x, pacman_y, pacmand_x, pacmand_y;
     private int req_dx, req_dy, view_dx, view_dy;
-
+  // Maze data (15x15 grid, each short represents block state)
     private final short levelData[] = {
             19, 26, 26, 26, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
             21, 0, 0, 0, 17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
@@ -72,30 +75,34 @@ public class Board extends JPanel implements ActionListener {
             1, 25, 24, 24, 24, 24, 24, 24, 24, 24, 16, 16, 16, 18, 20,
             9, 8, 8, 8, 8, 8, 8, 8, 8, 8, 25, 24, 24, 24, 28
     };
-
+ // Valid speeds and max speed
     private final int validSpeeds[] = {1, 2, 3, 4, 6, 8};
     private final int maxSpeed = 6;
-
+    // Game speed and screen data array
     private int currentSpeed = 3;
     private short[] screenData;
+ // Timer for game loop   
     private Timer timer;
-
+/**
+     * Constructor: Load images, initialize variables and board
+     */
     public Board() {
-
-        loadImages();
-        initVariables();
-        initBoard();
+        loadImages();     // Load images (not shown in your code snippet)
+        initVariables();  // Initialize game variables
+        initBoard();      // Setup board visuals and input
     }
 
+     /**
+     * Set up the game board
+     */
     private void initBoard() {
-
-        addKeyListener(new TAdapter());
-
-        setFocusable(true);
-
-        setBackground(Color.black);
+        addKeyListener(new TAdapter()); // Listen to key inputs
+        setFocusable(true);             // Enable focus to get key events
+        setBackground(Color.black);     // Background color
     }
-
+    /**
+     * Initialize all game-related variables and arrays
+     */
     private void initVariables() {
 
         screenData = new short[N_BLOCKS * N_BLOCKS];
@@ -109,16 +116,22 @@ public class Board extends JPanel implements ActionListener {
         dx = new int[4];
         dy = new int[4];
 
-        timer = new Timer(40, this);
+        timer = new Timer(40, this); // Timer calls `actionPerformed` every 40ms
         timer.start();
     }
+    /**
+     * Called when component is added to container (game starts here)
+     */
 
     @Override
     public void addNotify() {
         super.addNotify();
 
-        initGame();
+        initGame(); // Start game (method not shown in snippet)
     }
+    /**
+     * Handle Pac-Man animation
+     */
 
     private void doAnim() {
 
@@ -129,28 +142,31 @@ public class Board extends JPanel implements ActionListener {
             pacmanAnimPos = pacmanAnimPos + pacAnimDir;
 
             if (pacmanAnimPos == (PACMAN_ANIM_COUNT - 1) || pacmanAnimPos == 0) {
-                pacAnimDir = -pacAnimDir;
+                pacAnimDir = -pacAnimDir;// Reverse animation direction
             }
         }
     }
 
+   
+    /**
+     * Core game logic: move characters, check maze, draw everything
+     */
     private void playGame(Graphics2D g2d) {
-
         if (dying) {
-
-            death();
-
+            death(); // Handle death
         } else {
-
-            movePacman();
-            drawPacman(g2d);
-            moveGhosts(g2d);
-            checkMaze();
+            movePacman();    // Move Pac-Man (method not shown)
+            drawPacman(g2d); // Draw Pac-Man (method not shown)
+            moveGhosts(g2d); // Move ghosts
+            checkMaze();     // Check if level is complete
         }
     }
 
-    private void showIntroScreen(Graphics2D g2d) {
 
+    /**
+     * Draw the intro screen before the game starts
+     */
+    private void showIntroScreen(Graphics2D g2d) {
         g2d.setColor(new Color(0, 32, 48));
         g2d.fillRect(50, SCREEN_SIZE / 2 - 30, SCREEN_SIZE - 100, 50);
         g2d.setColor(Color.white);
@@ -165,37 +181,33 @@ public class Board extends JPanel implements ActionListener {
         g2d.drawString(s, (SCREEN_SIZE - metr.stringWidth(s)) / 2, SCREEN_SIZE / 2);
     }
 
+     /**
+     * Draw score and remaining lives
+     */
     private void drawScore(Graphics2D g) {
-
-        int i;
-        String s;
-
         g.setFont(smallFont);
         g.setColor(new Color(96, 128, 255));
-        s = "Score: " + score;
-        g.drawString(s, SCREEN_SIZE / 2 + 96, SCREEN_SIZE + 16);
+        g.drawString("Score: " + score, SCREEN_SIZE / 2 + 96, SCREEN_SIZE + 16);
 
-        for (i = 0; i < pacsLeft; i++) {
+        for (int i = 0; i < pacsLeft; i++) {
             g.drawImage(pacman3left, i * 28 + 8, SCREEN_SIZE + 1, this);
         }
     }
-
+     /**
+     * Check if all dots are cleared to proceed to next level
+     */
     private void checkMaze() {
-
         short i = 0;
         boolean finished = true;
 
         while (i < N_BLOCKS * N_BLOCKS && finished) {
-
             if ((screenData[i] & 48) != 0) {
                 finished = false;
             }
-
             i++;
         }
 
         if (finished) {
-
             score += 50;
 
             if (N_GHOSTS < MAX_GHOSTS) {
@@ -206,10 +218,9 @@ public class Board extends JPanel implements ActionListener {
                 currentSpeed++;
             }
 
-            initLevel();
+            initLevel(); // Load new level (method not shown)
         }
     }
-
     private void death() {
 
         pacsLeft--;
