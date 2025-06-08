@@ -117,7 +117,7 @@ public class LoginView extends javax.swing.JFrame {
         // TODO add your handling code here:
         DashboardView dashboard = new DashboardView();
         dashboard.setVisible(true);
-        this.dispose();
+        this.dispose(); 
         
     }//GEN-LAST:event_LoginActionPerformed
 
