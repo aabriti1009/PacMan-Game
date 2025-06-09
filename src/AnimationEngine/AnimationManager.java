@@ -77,4 +77,102 @@ public class AnimationManager {
      * @param currFrame the current frame of the animation
      * @return the next frame image
      */
-}   
+   public static EImage getNextFrame(EImage currFrame) {
+        return animation.containsKey(currFrame) ? animation.get(currFrame) : currFrame;
+    }
+    
+    /**
+     * Gets the first frame of the animation for the specified Sprite.
+     *  Method gets usually called when a Sprite changes significantly its state.
+     *  (e.g a MovingEntity changes direction / Ghosts gets vulnerable ecc.)
+     * @param s the Sprite to return the first frame for.
+     * @return the first frame
+     */
+    public static EImage getFirstFrame(Sprite s) {
+        
+        if (s instanceof Pacman) {
+            Pacman p = (Pacman)s;
+    
+            // Check ghost type
+            if (p.getDirection() == null)
+                return EImage.pacman_right_1;
+            
+            switch(((Pacman) s).getDirection()) {
+                case UP:
+                    return EImage.pacman_up_1;
+                case DOWN:
+                    return EImage.pacman_down_1;
+                case LEFT:
+                    return EImage.pacman_left_1;
+                
+            }
+        } else if (s instanceof Ghost){
+            Ghost g=(Ghost) s;
+    
+            // Check ghost type
+            if(!g.isVulnerable()) {
+                if (g.getType() == null)
+                    return EImage.placeholder;
+                switch (g.getType()){
+                    case ghost1:
+                        // Check Ghost Direction
+                        if (g.getDirection() == null)
+                            return EImage.ghost1_right;
+                        switch (g.getDirection()){
+                            case UP:
+                                return EImage.ghost1_up;
+                            case DOWN:
+                                return EImage.ghost1_down;
+                            case LEFT:
+                                return EImage.ghost1_left;
+                           
+                        }
+                    case ghost2:
+                        // Check Ghost Direction
+                        if (g.getDirection() == null)
+                            return EImage.ghost2_right;
+                        switch (g.getDirection()){
+                            case UP:
+                                return EImage.ghost2_up;
+                            case DOWN:
+                                return EImage.ghost2_down;
+                            case LEFT:
+                                return EImage.ghost2_left;
+                            
+                        }
+                    case ghost3:
+                        // Check Ghost Direction
+                        if (g.getDirection() == null)
+                            return EImage.ghost3_right;
+                        switch (g.getDirection()){
+                            case UP:
+                                return EImage.ghost3_up;
+                            case DOWN:
+                                return EImage.ghost3_down;
+                            case LEFT:
+                                return EImage.ghost3_left;
+                           
+                        }
+                    case ghost4:
+                        // Check Ghost Direction
+                        if (g.getDirection() == null)
+                            return EImage.ghost4_right;
+                        switch (g.getDirection()){
+                            case UP:
+                                return EImage.ghost4_up;
+                            case DOWN:
+                                return EImage.ghost4_down;
+                            case LEFT:
+                                return EImage.ghost4_left;
+                           
+                        }
+                }
+            } else { // IF THE GHOST IS VULNERABLE
+                return s.getImage();
+            }
+        }
+        // Add other animations here
+        
+        return s.getImage();
+    }
+}
