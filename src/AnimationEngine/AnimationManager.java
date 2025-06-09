@@ -104,6 +104,10 @@ public class AnimationManager {
                     return EImage.pacman_down_1;
                 case LEFT:
                     return EImage.pacman_left_1;
+                default://RIGHT 
+                    return EImage.pacman_right_1;
+                    
+               
                 
             }
         } else if (s instanceof Ghost){
@@ -125,6 +129,8 @@ public class AnimationManager {
                                 return EImage.ghost1_down;
                             case LEFT:
                                 return EImage.ghost1_left;
+                            default:
+                                return EImage.ghost1_right;
                            
                         }
                     case ghost2:
@@ -138,6 +144,8 @@ public class AnimationManager {
                                 return EImage.ghost2_down;
                             case LEFT:
                                 return EImage.ghost2_left;
+                            default:
+                                return EImage.ghost2_right;
                             
                         }
                     case ghost3:
@@ -151,6 +159,8 @@ public class AnimationManager {
                                 return EImage.ghost3_down;
                             case LEFT:
                                 return EImage.ghost3_left;
+                            default:
+                                return EImage.ghost3_right;
                            
                         }
                     case ghost4:
@@ -164,6 +174,8 @@ public class AnimationManager {
                                 return EImage.ghost4_down;
                             case LEFT:
                                 return EImage.ghost4_left;
+                            default:
+                                return EImage.ghost4_right;
                            
                         }
                 }
