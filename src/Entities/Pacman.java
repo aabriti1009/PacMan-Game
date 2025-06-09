@@ -133,4 +133,24 @@ public class Pacman extends MovingEntity{
     //////////////////
     // Getters and setters below
     
+    public long getScore(){
+        return score;
+    }
+    
+    public void setLives(int lives){
+        this.lives=lives;
+        Game.painter().updateLivesPanel(lives);
+    }
+    
+    public void increaseScore(long score) {
+        setScore(this.score + score);
+    }
+    
+    public void setScore(long score){
+        this.score = score;
+        Game.painter().updateScoreLabel(score);
+    }
 }
+
+    
+
