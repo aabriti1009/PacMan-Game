@@ -130,18 +130,5 @@ public class Painter {
     
     ///////////////////
     // Getters and Setters below
-    public void updateScoreLabel(long newScore) {
-        scoreHUD.updateScore(newScore);
-    }
-    public void updateLivesPanel(int newLives) { livesHUD.updateLives(newLives);}
-    public void updateRoundPanel(int newRound) { roundHUD.updateRound(newRound);}
-    public static RoundJLabel getRoundHUD() { return roundHUD; }
     
-    public JLayeredPane getGamepanel(){
-        return gamepanel;
-    }
-    
-    public JFrame getGameframe(){
-        return gameframe;
-    }
 }
