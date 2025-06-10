@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * The score JLabel that shows Pacmans score as part of the game's HUD system.
+ * The score JLabel that shows Pacman score as part of the game's HUD system.
  */
 public class ScoreJLabel extends JLabel {
     
