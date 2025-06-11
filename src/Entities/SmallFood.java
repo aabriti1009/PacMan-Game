@@ -5,9 +5,7 @@ import Media.EImage;
 import Settings.EParam;
 import Settings.Settings;
 
-/**
- * Simple food that merely increases Pacman's score upon geting eaten.
- */
+
 public class SmallFood extends Food{
     
     public SmallFood(int x, int y, Edge currEdge){
