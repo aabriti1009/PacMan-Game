@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.LineBorder;
 import javax.swing.Timer;
-import pacmangame.Controller.RegistrationController;
+import pacman.game.Controller.RegistrationController;
 
 /**
  *
@@ -31,14 +31,16 @@ public class Registration extends javax.swing.JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
-    private JProgressBar passwordStrengthBar;
-    private JLabel strengthLabel;
     private JButton registerButton;
     private JButton backButton;
     private JLabel usernameLabel;
     private JLabel emailLabel;
     private JLabel passwordLabel;
     private JLabel confirmPasswordLabel;
+    
+    // Password visibility toggles
+    private JButton passwordVisibilityToggle;
+    private JButton confirmPasswordVisibilityToggle;
     
     // Animation properties
     private Timer animationTimer;
@@ -86,6 +88,10 @@ public class Registration extends javax.swing.JFrame {
         customizeComponents();
         layoutComponents();
         addEventListeners();
+        
+        // Test database connection
+        pacman.game.dao.UserDAO dao = new pacman.game.dao.UserDAO();
+        dao.testConnection();
     }
     
     private void initializeComponents() {
@@ -99,12 +105,18 @@ public class Registration extends javax.swing.JFrame {
         emailField = new JTextField();
         passwordField = new JPasswordField();
         confirmPasswordField = new JPasswordField();
-        passwordStrengthBar = new JProgressBar();
-        strengthLabel = new JLabel("Password Strength");
         registerButton = new JButton("START GAME");
         backButton = new JButton("← Back");
         emailValidationLabel = new JLabel("");
         passwordValidationLabel = new JLabel("");
+        
+        // Initialize show/hide buttons
+        passwordVisibilityToggle = new JButton("Show");
+        confirmPasswordVisibilityToggle = new JButton("Show");
+        
+        // Style visibility toggle buttons
+        styleToggleButton(passwordVisibilityToggle);
+        styleToggleButton(confirmPasswordVisibilityToggle);
         
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pacman Registration");
@@ -153,7 +165,7 @@ public class Registration extends javax.swing.JFrame {
         mainPanel.setBackground(new Color(0, 0, 0, 200));
         
         // Style labels with semi-transparent background panels
-        JLabel[] labels = {titleLabel, usernameLabel, emailLabel, passwordLabel, confirmPasswordLabel, strengthLabel};
+        JLabel[] labels = {titleLabel, usernameLabel, emailLabel, passwordLabel, confirmPasswordLabel};
         for (JLabel label : labels) {
             label.setForeground(Color.WHITE);
             label.setFont(label == titleLabel ? 
@@ -196,11 +208,41 @@ public class Registration extends javax.swing.JFrame {
         backButton.setForeground(Color.WHITE);
         backButton.setBorder(null);
         backButton.setFocusPainted(false);
+    }
+    
+    private void styleToggleButton(JButton button) {
+        // Style the show/hide buttons
+        button.setBackground(new Color(240, 240, 240));
+        button.setForeground(Color.BLACK);
+        button.setBorder(BorderFactory.createLineBorder(THEME_BLUE, 1));
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         
-        // Style progress bar with transparency
-        passwordStrengthBar.setForeground(new Color(THEME_BLUE.getRed(), THEME_BLUE.getGreen(), THEME_BLUE.getBlue(), 200));
-        passwordStrengthBar.setBackground(new Color(45, 45, 45, 150));
-        passwordStrengthBar.setBorderPainted(false);
+        // Add hover effect
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(new Color(220, 220, 220));
+                button.setBorder(BorderFactory.createLineBorder(THEME_BLUE, 2));
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(new Color(240, 240, 240));
+                button.setBorder(BorderFactory.createLineBorder(THEME_BLUE, 1));
+            }
+            
+            @Override
+            public void mousePressed(MouseEvent e) {
+                button.setBackground(new Color(200, 200, 200));
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(new Color(220, 220, 220));
+            }
+        });
     }
     
     private void layoutComponents() {
@@ -220,29 +262,40 @@ public class Registration extends javax.swing.JFrame {
         emailField.setBounds(250, 220, 300, 40);
         
         passwordLabel.setBounds(250, 270, 300, 20);
-        passwordField.setBounds(250, 295, 300, 40);
+        passwordField.setBounds(250, 295, 260, 40);
         
         confirmPasswordLabel.setBounds(250, 345, 300, 20);
-        confirmPasswordField.setBounds(250, 370, 300, 40);
-        
-        // Password strength
-        passwordStrengthBar.setBounds(250, 420, 300, 5);
-        strengthLabel.setBounds(250, 430, 300, 20);
+        confirmPasswordField.setBounds(250, 370, 260, 40);
         
         // Buttons
-        registerButton.setBounds(250, 470, 300, 50);
+        registerButton.setBounds(250, 440, 300, 50);
         backButton.setBounds(20, 20, 80, 30);
         
         // Add validation labels
         emailValidationLabel.setBounds(250, 260, 300, 20);
         passwordValidationLabel.setBounds(250, 335, 300, 20);
         
+        // Position password field and its visibility toggle
+        passwordField.setBounds(250, 295, 260, 40);
+        passwordVisibilityToggle.setBounds(515, 300, 60, 34);
+        
+        // Position confirm password field and its visibility toggle
+        confirmPasswordField.setBounds(250, 370, 260, 40);
+        confirmPasswordVisibilityToggle.setBounds(515, 375, 60, 34);
+
+        // Add toggle buttons to panel
+        mainPanel.add(passwordVisibilityToggle);
+        mainPanel.add(confirmPasswordVisibilityToggle);
+        
+        // Make toggle buttons invisible initially (they will be shown during animation)
+        passwordVisibilityToggle.setVisible(false);
+        confirmPasswordVisibilityToggle.setVisible(false);
+        
         // Add components to panel
         JComponent[] components = {
             titleLabel, usernameLabel, usernameField,
             emailLabel, emailField, passwordLabel, passwordField,
             confirmPasswordLabel, confirmPasswordField,
-            passwordStrengthBar, strengthLabel,
             registerButton, backButton,
             emailValidationLabel, passwordValidationLabel
         };
@@ -256,9 +309,9 @@ public class Registration extends javax.swing.JFrame {
     private void setupAnimations() {
         JComponent[] components = {
             titleLabel, usernameLabel, usernameField,
-            emailLabel, emailField, passwordLabel, passwordField,
-            confirmPasswordLabel, confirmPasswordField,
-            passwordStrengthBar, strengthLabel,
+            emailLabel, emailField, 
+            passwordLabel, passwordField, passwordVisibilityToggle,
+            confirmPasswordLabel, confirmPasswordField, confirmPasswordVisibilityToggle,
             registerButton, backButton
         };
         
@@ -441,13 +494,6 @@ public class Registration extends javax.swing.JFrame {
             }
         });
         
-        // Password strength checker
-        passwordField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { updateStrength(); }
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { updateStrength(); }
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { updateStrength(); }
-        });
-        
         // Real-time email validation
         emailField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             public void changedUpdate(javax.swing.event.DocumentEvent e) { validateEmail(); }
@@ -455,11 +501,24 @@ public class Registration extends javax.swing.JFrame {
             public void insertUpdate(javax.swing.event.DocumentEvent e) { validateEmail(); }
         });
         
-        // Enhanced password validation
+        // Password validation
         passwordField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             public void changedUpdate(javax.swing.event.DocumentEvent e) { validatePassword(); }
             public void removeUpdate(javax.swing.event.DocumentEvent e) { validatePassword(); }
             public void insertUpdate(javax.swing.event.DocumentEvent e) { validatePassword(); }
+        });
+
+        // Add password visibility toggle listeners
+        passwordVisibilityToggle.addActionListener(e -> {
+            boolean visible = passwordVisibilityToggle.getText().equals("Show");
+            passwordField.setEchoChar(visible ? (char)0 : '•');
+            passwordVisibilityToggle.setText(visible ? "Hide" : "Show");
+        });
+
+        confirmPasswordVisibilityToggle.addActionListener(e -> {
+            boolean visible = confirmPasswordVisibilityToggle.getText().equals("Show");
+            confirmPasswordField.setEchoChar(visible ? (char)0 : '•');
+            confirmPasswordVisibilityToggle.setText(visible ? "Hide" : "Show");
         });
     }
     
@@ -469,78 +528,59 @@ public class Registration extends javax.swing.JFrame {
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
         
+        // First check if passwords match (this is UI logic)
         if (!password.equals(confirmPassword)) {
-            showError("Passwords do not match");
+            showError("Passwords do not match. Please try again");
+            confirmPasswordField.requestFocus();
             return;
         }
         
+        // Delegate to controller for registration
         if (controller.registerUser(username, email, password)) {
             JOptionPane.showMessageDialog(this, 
                 "Registration successful!\nWelcome to Pacman!", 
                 "Success", 
                 JOptionPane.INFORMATION_MESSAGE);
-            dispose();
+            dispose(); // Close registration window
         } else {
-            showError("Registration failed. Please check your input and try again.");
+            showError(controller.getLastError());
         }
     }
     
     private void validateEmail() {
         String email = emailField.getText();
-        if (email.isEmpty()) {
-            emailValidationLabel.setText("Email is required");
-            emailValidationLabel.setForeground(Color.RED);
-        } else if (!controller.validateEmail(email)) {
-            emailValidationLabel.setText("Invalid email format or already exists");
-            emailValidationLabel.setForeground(Color.RED);
-        } else {
+        String result = controller.validateEmail(email);
+        
+        if (result == null) {
+            // Valid email
             emailValidationLabel.setText("Valid email ✓");
             emailValidationLabel.setForeground(new Color(0, 255, 0));
+        } else {
+            // Invalid email
+            emailValidationLabel.setText(result);
+            emailValidationLabel.setForeground(Color.RED);
         }
     }
     
     private void validatePassword() {
         String password = new String(passwordField.getPassword());
+        String result = controller.validatePassword(password);
         
-        if (!controller.validatePassword(password)) {
-            if (password.isEmpty()) {
-                passwordValidationLabel.setText("Password is required");
-            } else if (password.length() < 8) {
-                passwordValidationLabel.setText("Password must be at least 8 characters");
-            } else if (!password.matches(".*[A-Z].*")) {
-                passwordValidationLabel.setText("Password must contain at least one uppercase letter");
-            } else if (!password.matches(".*[a-z].*")) {
-                passwordValidationLabel.setText("Password must contain at least one lowercase letter");
-            } else if (!password.matches(".*[0-9].*")) {
-                passwordValidationLabel.setText("Password must contain at least one number");
-            }
-            passwordValidationLabel.setForeground(Color.RED);
-        } else {
-            passwordValidationLabel.setText("Strong password ✓");
+        if (result == null) {
+            // Valid password
+            passwordValidationLabel.setText("Password valid ✓");
             passwordValidationLabel.setForeground(new Color(0, 255, 0));
-        }
-        
-        updateStrength();
-    }
-    
-    private void updateStrength() {
-        String password = new String(passwordField.getPassword());
-        int strength = controller.calculatePasswordStrength(password);
-        passwordStrengthBar.setValue(strength);
-        
-        if (strength < 30) {
-            passwordStrengthBar.setForeground(Color.RED);
-        } else if (strength < 60) {
-            passwordStrengthBar.setForeground(Color.YELLOW);
         } else {
-            passwordStrengthBar.setForeground(Color.GREEN);
+            // Invalid password
+            passwordValidationLabel.setText(result);
+            passwordValidationLabel.setForeground(Color.RED);
         }
     }
     
     private void showError(String message) {
         JOptionPane.showMessageDialog(this, 
             message, 
-            "Validation Error", 
+            "Registration Error", 
             JOptionPane.ERROR_MESSAGE);
     }
     
