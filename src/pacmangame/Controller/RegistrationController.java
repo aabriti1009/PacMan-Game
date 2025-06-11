@@ -122,15 +122,7 @@ public class RegistrationController {
         return null; // null means validation passed
     }
     
-    public int calculatePasswordStrength(String password) {
-        int strength = 0;
-        if (password.length() > 8) strength += 20;
-        if (password.matches(".*[A-Z].*")) strength += 20;
-        if (password.matches(".*[a-z].*")) strength += 20;
-        if (password.matches(".*[0-9].*")) strength += 20;
-        if (password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*")) strength += 20;
-        return strength;
-    }
+    
 }
     
 
