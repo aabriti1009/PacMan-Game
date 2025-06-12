@@ -70,6 +70,9 @@ public class Ghost extends MovingEntity {
      * Unqueues a turn from the queue and tries to perform it on the Node.
      * @param n The Node to perform the turn on.
      */
+ pratikshya
+}
+=======
     @Override
     public void makeTurn(Node n) {
         // If there is priority queue unqueue that one,
@@ -201,3 +204,4 @@ public class Ghost extends MovingEntity {
 
 
 }
+ main
