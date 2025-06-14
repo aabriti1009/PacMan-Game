@@ -69,8 +69,12 @@ public class Ghost extends MovingEntity {
     /**
      * Unqueues a turn from the queue and tries to perform it on the Node.
      * @param n The Node to perform the turn on.
-     */
- @Override
+     */pratikshya
+
+}
+
+    @Override
+ main
     public void makeTurn(Node n) {
         // If there is priority queue unqueue that one,
         // otherwise super.makeTurn()
@@ -166,4 +170,42 @@ public class Ghost extends MovingEntity {
     }
     
     ////////////////
+ pratikshya
 }
+    // Setters and getters below
+    
+    public void die() {
+        dead = true;
+        setColliding(false);
+        
+        BlinkAnimator b = new BlinkAnimator(this, 100, true);
+        b.start();
+        Timer t = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dead = false;
+                b.stop();
+                setColliding(true);
+            }
+        });
+        t.start();
+    }
+    
+    public EGhostType getType(){
+        return type;
+    }
+    
+    @Override
+    public void resetEntity() {
+        super.resetEntity();
+        priorityQueue = new LinkedList<>();
+    }
+    
+    public static boolean isVulnerable(){
+        return vulnerable;
+    }
+
+
+}
+ main
+ main
