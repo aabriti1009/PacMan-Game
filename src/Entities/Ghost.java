@@ -69,11 +69,12 @@ public class Ghost extends MovingEntity {
     /**
      * Unqueues a turn from the queue and tries to perform it on the Node.
      * @param n The Node to perform the turn on.
-     */
- pratikshya
+     */pratikshya
+
 }
-=======
+
     @Override
+ main
     public void makeTurn(Node n) {
         // If there is priority queue unqueue that one,
         // otherwise super.makeTurn()
@@ -169,6 +170,8 @@ public class Ghost extends MovingEntity {
     }
     
     ////////////////
+ pratikshya
+}
     // Setters and getters below
     
     public void die() {
@@ -204,4 +207,5 @@ public class Ghost extends MovingEntity {
 
 
 }
+ main
  main
