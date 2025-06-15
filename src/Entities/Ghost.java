@@ -171,8 +171,12 @@ public class Ghost extends MovingEntity {
     
     ////////////////
  pratikshya
+ //Setters and getters below
+=======
+ pratikshya
 }
     // Setters and getters below
+ main
     
     public void die() {
         dead = true;
@@ -206,6 +210,10 @@ public class Ghost extends MovingEntity {
     }
 
 
+ pratikshya
 }
+=======
+}
+ main
  main
  main
