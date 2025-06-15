@@ -166,4 +166,38 @@ public class Ghost extends MovingEntity {
     }
     
     ////////////////
+ //Setters and getters below
+    
+    public void die() {
+        dead = true;
+        setColliding(false);
+        
+        BlinkAnimator b = new BlinkAnimator(this, 100, true);
+        b.start();
+        Timer t = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dead = false;
+                b.stop();
+                setColliding(true);
+            }
+        });
+        t.start();
+    }
+    
+    public EGhostType getType(){
+        return type;
+    }
+    
+    @Override
+    public void resetEntity() {
+        super.resetEntity();
+        priorityQueue = new LinkedList<>();
+    }
+    
+    public static boolean isVulnerable(){
+        return vulnerable;
+    }
+
+
 }
