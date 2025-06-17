@@ -42,6 +42,10 @@ public class Registration extends javax.swing.JFrame {
     private JButton passwordVisibilityToggle;
     private JButton confirmPasswordVisibilityToggle;
     
+    // Eye icons using Unicode characters
+    private static final String EYE_OPEN = "👁️";
+    private static final String EYE_CLOSED = "👁️‍🗨️";
+    
     // Animation properties
     private Timer animationTimer;
     private Timer pacmanTimer;
@@ -78,6 +82,9 @@ public class Registration extends javax.swing.JFrame {
     private JLabel emailValidationLabel;
     private JLabel passwordValidationLabel;
     
+    private ImageIcon eyeOpenIcon;
+    private ImageIcon eyeClosedIcon;
+    
     public Registration() {
         controller = new RegistrationController();
         initializeMaze();
@@ -110,13 +117,15 @@ public class Registration extends javax.swing.JFrame {
         emailValidationLabel = new JLabel("");
         passwordValidationLabel = new JLabel("");
         
-        // Initialize show/hide buttons
-        passwordVisibilityToggle = new JButton("Show");
-        confirmPasswordVisibilityToggle = new JButton("Show");
+        // Initialize show/hide buttons with eye icons
+        passwordVisibilityToggle = new JButton(EYE_CLOSED);
+        confirmPasswordVisibilityToggle = new JButton(EYE_CLOSED);
         
         // Style visibility toggle buttons
         styleToggleButton(passwordVisibilityToggle);
         styleToggleButton(confirmPasswordVisibilityToggle);
+        
+        registerButton.setVisible(false); // Hide initially
         
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pacman Registration");
@@ -198,49 +207,59 @@ public class Registration extends javax.swing.JFrame {
         passwordValidationLabel.setBackground(new Color(0, 0, 0, 150));
         
         // Style buttons
-        registerButton.setBackground(new Color(THEME_BLUE.getRed(), THEME_BLUE.getGreen(), THEME_BLUE.getBlue(), 220));
-        registerButton.setForeground(Color.WHITE);
+        registerButton.setBackground(new Color(0, 51, 102)); // Dark blue
+        registerButton.setOpaque(true);
+        registerButton.setContentAreaFilled(true);
+        registerButton.setForeground(Color.BLACK); // Black text
         registerButton.setFocusPainted(false);
         registerButton.setBorder(new LineBorder(THEME_BLUE, 2));
         registerButton.setFont(new Font("Press Start 2P", Font.BOLD, 16));
         
-        backButton.setBackground(new Color(THEME_DARK.getRed(), THEME_DARK.getGreen(), THEME_DARK.getBlue(), 200));
-        backButton.setForeground(Color.WHITE);
-        backButton.setBorder(null);
+        backButton.setBackground(new Color(0, 51, 102)); // Dark blue
+        backButton.setOpaque(true);
+        backButton.setContentAreaFilled(true);
+        backButton.setForeground(Color.BLACK); // Black text
         backButton.setFocusPainted(false);
+        backButton.setBorder(new LineBorder(THEME_BLUE, 2));
+        backButton.setFont(new Font("Press Start 2P", Font.BOLD, 16));
     }
     
     private void styleToggleButton(JButton button) {
         // Style the show/hide buttons
-        button.setBackground(new Color(240, 240, 240));
-        button.setForeground(Color.BLACK);
-        button.setBorder(BorderFactory.createLineBorder(THEME_BLUE, 1));
+        button.setBackground(new Color(45, 45, 45, 200));
+        button.setForeground(Color.WHITE);
+        button.setBorder(null);
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        button.setContentAreaFilled(false);
+        button.setOpaque(false);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        button.setVisible(true); // Make button visible by default
         
         // Add hover effect
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(220, 220, 220));
-                button.setBorder(BorderFactory.createLineBorder(THEME_BLUE, 2));
+                button.setBackground(new Color(60, 60, 60, 200));
+                button.setOpaque(true);
             }
             
             @Override
             public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(240, 240, 240));
-                button.setBorder(BorderFactory.createLineBorder(THEME_BLUE, 1));
+                button.setBackground(new Color(45, 45, 45, 200));
+                button.setOpaque(false);
             }
             
             @Override
             public void mousePressed(MouseEvent e) {
-                button.setBackground(new Color(200, 200, 200));
+                button.setBackground(new Color(70, 70, 70, 200));
+                button.setOpaque(true);
             }
             
             @Override
             public void mouseReleased(MouseEvent e) {
-                button.setBackground(new Color(220, 220, 220));
+                button.setBackground(new Color(60, 60, 60, 200));
+                button.setOpaque(true);
             }
         });
     }
@@ -262,10 +281,10 @@ public class Registration extends javax.swing.JFrame {
         emailField.setBounds(250, 220, 300, 40);
         
         passwordLabel.setBounds(250, 270, 300, 20);
-        passwordField.setBounds(250, 295, 260, 40);
+        passwordField.setBounds(250, 295, 300, 40);
         
         confirmPasswordLabel.setBounds(250, 345, 300, 20);
-        confirmPasswordField.setBounds(250, 370, 260, 40);
+        confirmPasswordField.setBounds(250, 370, 300, 40);
         
         // Buttons
         registerButton.setBounds(250, 440, 300, 50);
@@ -276,20 +295,16 @@ public class Registration extends javax.swing.JFrame {
         passwordValidationLabel.setBounds(250, 335, 300, 20);
         
         // Position password field and its visibility toggle
-        passwordField.setBounds(250, 295, 260, 40);
-        passwordVisibilityToggle.setBounds(515, 300, 60, 34);
+        passwordField.setBounds(250, 295, 300, 40);
+        passwordVisibilityToggle.setBounds(520, 300, 40, 40);
         
         // Position confirm password field and its visibility toggle
-        confirmPasswordField.setBounds(250, 370, 260, 40);
-        confirmPasswordVisibilityToggle.setBounds(515, 375, 60, 34);
-
+        confirmPasswordField.setBounds(250, 370, 300, 40);
+        confirmPasswordVisibilityToggle.setBounds(520, 375, 40, 40);
+        
         // Add toggle buttons to panel
         mainPanel.add(passwordVisibilityToggle);
         mainPanel.add(confirmPasswordVisibilityToggle);
-        
-        // Make toggle buttons invisible initially (they will be shown during animation)
-        passwordVisibilityToggle.setVisible(false);
-        confirmPasswordVisibilityToggle.setVisible(false);
         
         // Add components to panel
         JComponent[] components = {
@@ -478,21 +493,11 @@ public class Registration extends javax.swing.JFrame {
     }
     
     private void addEventListeners() {
-        registerButton.addActionListener(e -> handleRegistration());
-        backButton.addActionListener(e -> dispose());
-        
-        // Add hover effects
-        registerButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                registerButton.setBackground(new Color(0, 90, 190));
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e) {
-                registerButton.setBackground(THEME_BLUE);
-            }
+        registerButton.addActionListener(e -> {
+            handleRegistration();
+            registerButton.setText("Start Game");
         });
+        backButton.addActionListener(e -> dispose());
         
         // Real-time email validation
         emailField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
@@ -510,23 +515,54 @@ public class Registration extends javax.swing.JFrame {
 
         // Add password visibility toggle listeners
         passwordVisibilityToggle.addActionListener(e -> {
-            boolean visible = passwordVisibilityToggle.getText().equals("Show");
+            boolean visible = passwordVisibilityToggle.getText().equals(EYE_CLOSED);
             passwordField.setEchoChar(visible ? (char)0 : '•');
-            passwordVisibilityToggle.setText(visible ? "Hide" : "Show");
+            passwordVisibilityToggle.setText(visible ? EYE_OPEN : EYE_CLOSED);
         });
 
         confirmPasswordVisibilityToggle.addActionListener(e -> {
-            boolean visible = confirmPasswordVisibilityToggle.getText().equals("Show");
+            boolean visible = confirmPasswordVisibilityToggle.getText().equals(EYE_CLOSED);
             confirmPasswordField.setEchoChar(visible ? (char)0 : '•');
-            confirmPasswordVisibilityToggle.setText(visible ? "Hide" : "Show");
+            confirmPasswordVisibilityToggle.setText(visible ? EYE_OPEN : EYE_CLOSED);
         });
+
+        backButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                backButton.setBorder(new LineBorder(THEME_YELLOW, 2));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                backButton.setBorder(new LineBorder(THEME_BLUE, 2));
+            }
+        });
+
+        // Add hover effect to registerButton (border only)
+        registerButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                registerButton.setBorder(new LineBorder(THEME_YELLOW, 2));
+            }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                registerButton.setBorder(new LineBorder(THEME_BLUE, 2));
+            }
+        });
+
+        registerButton.setVisible(true); // Show the button
     }
     
     private void handleRegistration() {
-        String username = usernameField.getText();
-        String email = emailField.getText();
+        String username = usernameField.getText().trim();
+        String email = emailField.getText().trim();
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
+        
+        // Check for empty fields
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            showError("Please fill all Credential");
+            return;
+        }
         
         // First check if passwords match (this is UI logic)
         if (!password.equals(confirmPassword)) {
