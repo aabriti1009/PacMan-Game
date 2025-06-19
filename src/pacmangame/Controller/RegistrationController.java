@@ -3,8 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package pacmangame.Controller;
-import pacman.game.model.User;
-import pacman.game.dao.UserDAO;
+import pacmangame.model.User;
+import pacmangame.dao.UserDAO;
 
 /**
  *
@@ -22,9 +22,32 @@ public class RegistrationController {
         return lastError;
     }
     
+    /**
+     * Handles the user registration process
+     * @param username Username to register
+     * @param email Email address to register
+     * @param password Password for the account
+     * @return true if registration successful, false otherwise
+     */
     public boolean registerUser(String username, String email, String password) {
         // Reset last error
         lastError = null;
+        
+        // Basic input validation
+        if (username == null || username.trim().isEmpty()) {
+            lastError = "Username cannot be empty";
+            return false;
+        }
+        
+        if (email == null || email.trim().isEmpty()) {
+            lastError = "Email cannot be empty";
+            return false;
+        }
+        
+        if (password == null || password.isEmpty()) {
+            lastError = "Password cannot be empty";
+            return false;
+        }
         
         // Validate username
         String usernameError = validateUsername(username);
@@ -47,16 +70,21 @@ public class RegistrationController {
             return false;
         }
         
+        // Create and save user
         User user = new User(username, email, password);
-        boolean success = userDAO.registerUser(user);
-        
-        if (!success) {
-            lastError = "Registration failed. Please try again.";
+        if (!userDAO.registerUser(user)) {
+            lastError = "Failed to create account. Please try again.";
+            return false;
         }
         
-        return success;
+        return true;
     }
     
+    /**
+     * Validates username format and availability
+     * @param username Username to validate
+     * @return null if valid, error message otherwise
+     */
     public String validateUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
             return "Username cannot be empty";
@@ -78,9 +106,14 @@ public class RegistrationController {
             return "This username is already taken";
         }
         
-        return null; // null means validation passed
+        return null; // validation passed
     }
     
+    /**
+     * Validates email format and availability
+     * @param email Email to validate
+     * @return null if valid, error message otherwise
+     */
     public String validateEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
             return "Email cannot be empty";
@@ -95,9 +128,14 @@ public class RegistrationController {
             return "This email is already registered";
         }
         
-        return null; // null means validation passed
+        return null; // validation passed
     }
     
+    /**
+     * Validates password strength
+     * @param password Password to validate
+     * @return null if valid, error message otherwise
+     */
     public String validatePassword(String password) {
         if (password == null || password.isEmpty()) {
             return "Password cannot be empty";
@@ -119,11 +157,6 @@ public class RegistrationController {
             return "Password must contain at least one number";
         }
         
-        return null; // null means validation passed
+        return null; // validation passed
     }
-    
-    
-}
-    
-
-
+} 
