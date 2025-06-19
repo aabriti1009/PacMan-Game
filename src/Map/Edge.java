@@ -1,6 +1,10 @@
 package Map;
 
 import Entities.*;
+import static Map.EDirection.DOWN;
+import static Map.EDirection.LEFT;
+import static Map.EDirection.RIGHT;
+import static Map.EDirection.UP;
 import Settings.EParam;
 import Settings.Settings;
 

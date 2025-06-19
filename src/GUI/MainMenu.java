@@ -11,15 +11,22 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+ pratikshya
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+ main
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+ pratikshya
 import java.util.ArrayList;
 import java.util.Random;
 import java.awt.geom.Point2D;
+=======
+ main
 
 
 /**
@@ -28,6 +35,7 @@ import java.awt.geom.Point2D;
 public class MainMenu extends JFrame {
     
     private StartGamePanel startpanel;
+ pratikshya
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
     private static final Color THEME_BLUE = new Color(0, 122, 255);
@@ -54,10 +62,15 @@ public class MainMenu extends JFrame {
     
     public static void main(String[] args) {
         // Set system properties for better rendering
+=======
+    
+    public static void main(String[] args) {
+ main
         System.setProperty("sun.java2d.opengl", "true");
         System.setProperty("prism.allowhidpi", "false");
         System.setProperty("sun.java2d.uiScale", "1");
         
+ pratikshya
         // Use EventQueue to ensure proper thread handling
         EventQueue.invokeLater(() -> {
             try {
@@ -67,6 +80,8 @@ public class MainMenu extends JFrame {
                 e.printStackTrace();
             }
         });
+=======
+        new MainMenu(); main
     }
     
     /**
@@ -74,6 +89,7 @@ public class MainMenu extends JFrame {
      */
     public MainMenu() {
         super();
+ pratikshya
         setTitle("Pacman Game");
         setSize(900, 700);
         setLocationRelativeTo(null);
@@ -387,11 +403,33 @@ public class MainMenu extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 BlinkAnimator blinkAnimator = new BlinkAnimator(github_button, 80, true);
+=======
+        
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int size = Math.min(screenSize.height, screenSize.width);
+        Scaler.setNewsize(size);
+        
+        setTitle("SwingPacman - MENU");
+        setIconImage(Media.getImg(EImage.pacman_right_1));
+        
+        initComponents();
+        adjustSizes();
+        
+        AudioEngine.play(EAudio.ost, PlaybackMode.loop, null);
+    
+        startpanel = new StartGamePanel(this.getWidth(),  this);
+        
+        github_button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                BlinkAnimator blinkAnimator = new BlinkAnimator(github_button,80,true);
+                main
                 blinkAnimator.start();
                 AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
                     @Override
                     public void callback() {
                         blinkAnimator.stop();
+ pratikshya
                         try {
                             openWebpage(new URI("https://github.com/aabriti1009/PacMan-Game.git"));
                         } catch (Exception ex) {
@@ -423,6 +461,36 @@ public class MainMenu extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 BlinkAnimator blinkAnimator = new BlinkAnimator(play_button, 80, true);
+=======
+                        try{
+                            openWebpage(new URI("https://github.com/AlbertCerfeda/SwingPacman"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+        exit_button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                    BlinkAnimator blinkAnimator = new BlinkAnimator(exit_button,80,true);
+                    blinkAnimator.start();
+                    AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
+                        @Override
+                        public void callback(){
+                            blinkAnimator.stop();
+                            System.exit(0);
+                        }
+                    });
+                }
+            
+        });
+        play_button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                BlinkAnimator blinkAnimator = new BlinkAnimator(play_button,80,true);
+ main
                 blinkAnimator.start();
                 AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
                     @Override
@@ -433,6 +501,7 @@ public class MainMenu extends JFrame {
                 });
             }
         });
+ pratikshya
     }
     
     // Entity classes for animation
@@ -539,12 +608,43 @@ public class MainMenu extends JFrame {
             g2d.fillOval((int)x + size/3, (int)(y + size/2.5), size/8, size/8);
             g2d.fillOval((int)x + 5*size/8, (int)(y + size/2.5), size/8, size/8);
         }
+=======
+    
+        setUndecorated(true);
+        
+        add(startpanel,0);
+        startpanel.setLocation(0,0);
+        startpanel.setVisible(false);
+    
+        try {
+            InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("res/gif/gameplay.gif");
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            int nRead;
+            byte[] data = new byte[16384];
+            while ((nRead = in.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            
+            ImageIcon imageIcon = new ImageIcon(new ImageIcon(
+                    buffer.toByteArray()
+            ).getImage().getScaledInstance(getWidth(),getHeight(),Image.SCALE_DEFAULT));
+            
+            JLabel label = new JLabel(imageIcon);
+            add(label);
+            label.setBounds(0,0,getWidth(), getHeight());
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        setVisible(true);
+ main
     }
     
     /**
      * Opens a webpage in the Systems default web browser.
      * @param uri
      */
+ pratikshya
     public void openWebpage(URI uri) {
         Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
         if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
@@ -679,4 +779,5 @@ public class MainMenu extends JFrame {
     private JButton play_button;
     private JButton exit_button;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+ main
 }

@@ -1,3 +1,4 @@
+pratikshya
 //package Painter;
 //
 //import Entities.Sprite;
@@ -147,6 +148,8 @@
 //        return gameframe;
 //    }
 //}
+=======
+ main
 package Painter;
 
 import Entities.Sprite;
@@ -183,24 +186,40 @@ public class Painter {
      * @param g the input listener for the users inputs
      */
     public Painter(GameInputManager g) {
+ pratikshya
         // Set window size to 1000x600
         int width = 1000;
         int height = 600;
     
         System.out.println("size: " + width + "x" + height);
+=======
+        Dimension screenSize = t.getScreenSize();
+        int size = Math.min(screenSize.height, screenSize.width);
+    
+        System.out.println("size: " + size);
+ main
         System.out.println("DPI: " + t.getScreenResolution());
     
     
         // Scales the Sprite images and graphic settings based on the screen size
+pratikshya
         Scaler.setNewsize(width, height);
+=======
+        Scaler.setNewsize(size);
+        Scaler.setNewsize(size-Scaler.scale(100));
+ main
         Media.rescaleMedia(Scaler.getScale_factor());
         Settings.rescaleSettings(Scaler.getScale_factor());
         
         gameframe = new JFrame("SwingPacman");
         gameframe.setIconImage(Media.getImg(EImage.pacman_right_1));
         
+ pratikshya
         gameframe.setSize(width, height);
         gameframe.setLocationRelativeTo(null); // Center the window on screen
+=======
+        gameframe.setSize(Scaler.getNewSize(), size);
+ main
         gameframe.setResizable(false);
         gameframe.getContentPane().setBackground((Color)Settings.get(EParam.background_color));
         gameframe.setUndecorated(true);
@@ -209,16 +228,27 @@ public class Painter {
         gameframe.setVisible(true);
         
         gamepanel = new JLayeredPane();
+ pratikshya
         gamepanel.setBounds(0,0,width,height);
+=======
+        gamepanel.setBounds(0,0,size,size);
+ main
         
         
         gameframe.add(gamepanel);
     
         scoreHUD= new ScoreJLabel();
+ pratikshya
         scoreHUD.setBounds(0,height-Scaler.scale(100), Scaler.scale(500), (int)Settings.get(EParam.label_size));
         
         livesHUD = new LivesJPanel((int)Settings.get(EParam.pacman_starting_lives));
         livesHUD.setBounds(width-Scaler.scale(600),height-Scaler.scale(100), Scaler.scale(600), Scaler.scale(100));
+=======
+        scoreHUD.setBounds(0,size-Scaler.scale(100), Scaler.scale(500), (int)Settings.get(EParam.label_size));
+        
+        livesHUD = new LivesJPanel((int)Settings.get(EParam.pacman_starting_lives));
+        livesHUD.setBounds(size-Scaler.scale(600),size-Scaler.scale(100), Scaler.scale(600), Scaler.scale(100));
+ main
         
         roundHUD = new RoundJLabel();
         roundHUD.setLocation(Scaler.scale(400), Scaler.scale(470));
