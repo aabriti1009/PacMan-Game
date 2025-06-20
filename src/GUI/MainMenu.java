@@ -12,20 +12,28 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
  pratikshya
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+=======
+ pratikshya
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
  main
+ main
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+pratikshya
+=======
  pratikshya
 import java.util.ArrayList;
 import java.util.Random;
 import java.awt.geom.Point2D;
 =======
+ main
  main
 
 
@@ -35,6 +43,10 @@ import java.awt.geom.Point2D;
 public class MainMenu extends JFrame {
     
     private StartGamePanel startpanel;
+ pratikshya
+    
+    public static void main(String[] args) {
+=======
  pratikshya
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
@@ -66,10 +78,14 @@ public class MainMenu extends JFrame {
     
     public static void main(String[] args) {
  main
+ main
         System.setProperty("sun.java2d.opengl", "true");
         System.setProperty("prism.allowhidpi", "false");
         System.setProperty("sun.java2d.uiScale", "1");
         
+ pratikshya
+        new MainMenu();
+=======
  pratikshya
         // Use EventQueue to ensure proper thread handling
         EventQueue.invokeLater(() -> {
@@ -82,6 +98,7 @@ public class MainMenu extends JFrame {
         });
 =======
         new MainMenu(); main
+ main
     }
     
     /**
@@ -89,6 +106,8 @@ public class MainMenu extends JFrame {
      */
     public MainMenu() {
         super();
+ pratikshya
+=======
  pratikshya
         setTitle("Pacman Game");
         setSize(900, 700);
@@ -296,112 +315,28 @@ public class MainMenu extends JFrame {
                 THEME_YELLOW
             ));
         }
+ main
         
-        // Add ghosts with different colors
-        Color[] ghostColors = {
-            Color.RED,      // Blinky
-            Color.PINK,     // Pinky
-            Color.CYAN,     // Inky
-            Color.ORANGE    // Clyde
-        };
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int size = Math.min(screenSize.height, screenSize.width);
+        Scaler.setNewsize(size);
         
-        for (int i = 0; i < ghostColors.length; i++) {
-            ghostEntities.add(new GhostEntity(
-                random.nextInt(WINDOW_WIDTH),
-                random.nextInt(WINDOW_HEIGHT),
-                30,
-                ghostColors[i]
-            ));
-        }
-    }
-    
-    private void setupAnimations() {
-        animationTimer = new Timer(16, e -> {
-            // Update entities
-            for (PacmanEntity pacman : pacmanEntities) {
-                pacman.update();
-            }
-            for (GhostEntity ghost : ghostEntities) {
-                ghost.update();
-            }
-            repaint();
-        });
-        animationTimer.start();
-    }
-    
-    private void drawMaze(Graphics2D g2d) {
-        for (int row = 0; row < maze.length; row++) {
-            for (int col = 0; col < maze[0].length; col++) {
-                if (maze[row][col] == 1) {
-                    g2d.setColor(MAZE_COLOR);
-                    g2d.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                } else {
-                    g2d.setColor(DOT_COLOR);
-                    g2d.fillOval(
-                        col * CELL_SIZE + CELL_SIZE/2 - 2,
-                        row * CELL_SIZE + CELL_SIZE/2 - 2,
-                        4, 4
-                    );
-                }
-            }
-        }
-    }
-    
-    private void customizeComponents() {
-        // Style main panel
-        main_panel.setBackground(new Color(0, 0, 0, 170));
+        setTitle("SwingPacman - MENU");
+        setIconImage(Media.getImg(EImage.pacman_right_1));
         
-        // Style title
-        title.setFont(Media.getFont(EFont.regular).deriveFont(Font.BOLD, 64f));
-        title.setForeground(THEME_YELLOW);
-        title.setBounds(WINDOW_WIDTH/2 - 250, 50, 500, 80);
+        initComponents();
+        adjustSizes();
         
-        // Style buttons with modern look
-        styleButton(play_button, "PLAY", WINDOW_WIDTH/2 - 150, 250);
-        styleButton(exit_button, "EXIT", WINDOW_WIDTH/2 - 150, 350);
-        styleButton(github_button, "GitHub", WINDOW_WIDTH - 150, WINDOW_HEIGHT - 80);
-    }
+        AudioEngine.play(EAudio.ost, PlaybackMode.loop, null);
     
-    private void styleButton(JButton button, String text, int x, int y) {
-        button.setText(text);
-        button.setFont(Media.getFont(EFont.regular).deriveFont(Font.BOLD, 24f));
-        button.setForeground(Color.WHITE);
-        button.setBackground(new Color(0, 0, 0, 150));
-        button.setBorder(BorderFactory.createCompoundBorder(
-            new LineBorder(THEME_YELLOW, 2),
-            BorderFactory.createEmptyBorder(10, 20, 10, 20)
-        ));
-        button.setBounds(x, y, 200, 50);
-        button.setFocusPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        startpanel = new StartGamePanel(this.getWidth(),  this);
         
-        // Add hover effect
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(0, 0, 0, 200));
-                button.setBorder(BorderFactory.createCompoundBorder(
-                    new LineBorder(THEME_YELLOW, 3),
-                    BorderFactory.createEmptyBorder(10, 20, 10, 20)
-                ));
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(0, 0, 0, 150));
-                button.setBorder(BorderFactory.createCompoundBorder(
-                    new LineBorder(THEME_YELLOW, 2),
-                    BorderFactory.createEmptyBorder(10, 20, 10, 20)
-                ));
-            }
-        });
-    }
-    
-    private void addButtonListeners() {
-        // GitHub button
         github_button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+ pratikshya
+                BlinkAnimator blinkAnimator = new BlinkAnimator(github_button,80,true);
+=======
                 BlinkAnimator blinkAnimator = new BlinkAnimator(github_button, 80, true);
 =======
         
@@ -424,42 +359,50 @@ public class MainMenu extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 BlinkAnimator blinkAnimator = new BlinkAnimator(github_button,80,true);
                 main
+ main
                 blinkAnimator.start();
                 AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
                     @Override
                     public void callback() {
                         blinkAnimator.stop();
+pratikshya
+                        try{
+                            openWebpage(new URI("https://github.com/AlbertCerfeda/SwingPacman"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+=======
  pratikshya
                         try {
                             openWebpage(new URI("https://github.com/aabriti1009/PacMan-Game.git"));
                         } catch (Exception ex) {
                             ex.printStackTrace();
+ main
                         }
                     }
                 });
             }
         });
-        
-        // Exit button
         exit_button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                BlinkAnimator blinkAnimator = new BlinkAnimator(exit_button, 80, true);
-                blinkAnimator.start();
-                AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
-                    @Override
-                    public void callback() {
-                        blinkAnimator.stop();
-                        System.exit(0);
-                    }
-                });
-            }
+                    BlinkAnimator blinkAnimator = new BlinkAnimator(exit_button,80,true);
+                    blinkAnimator.start();
+                    AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
+                        @Override
+                        public void callback(){
+                            blinkAnimator.stop();
+                            System.exit(0);
+                        }
+                    });
+                }
+            
         });
-        
-        // Play button
         play_button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+ pratikshya
+                BlinkAnimator blinkAnimator = new BlinkAnimator(play_button,80,true);
+=======
                 BlinkAnimator blinkAnimator = new BlinkAnimator(play_button, 80, true);
 =======
                         try{
@@ -491,6 +434,7 @@ public class MainMenu extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 BlinkAnimator blinkAnimator = new BlinkAnimator(play_button,80,true);
  main
+ main
                 blinkAnimator.start();
                 AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
                     @Override
@@ -502,112 +446,40 @@ public class MainMenu extends JFrame {
             }
         });
  pratikshya
+=======
+ pratikshya
     }
+    main
     
-    // Entity classes for animation
-    private class PacmanEntity {
-        private double x, y;
-        private double speedX, speedY;
-        private int size;
-        private Color color;
-        private double mouthAngle;
-        private boolean mouthClosing;
+        setUndecorated(true);
         
-        public PacmanEntity(int x, int y, int size, Color color) {
-            this.x = x;
-            this.y = y;
-            this.size = size;
-            this.color = color;
-            this.speedX = random.nextDouble() * 4 - 2;
-            this.speedY = random.nextDouble() * 4 - 2;
-            this.mouthAngle = 0;
-            this.mouthClosing = false;
-        }
-        
-        public void update() {
-            // Move Pacman
-            x += speedX;
-            y += speedY;
-            
-            // Bounce off walls
-            if (x < 0 || x > WINDOW_WIDTH - size) speedX *= -1;
-            if (y < 0 || y > WINDOW_HEIGHT - size) speedY *= -1;
-            
-            // Animate mouth
-            if (mouthClosing) {
-                mouthAngle -= 5;
-                if (mouthAngle <= 0) mouthClosing = false;
-            } else {
-                mouthAngle += 5;
-                if (mouthAngle >= 45) mouthClosing = true;
-            }
-        }
-        
-        public void draw(Graphics2D g2d) {
-            g2d.setColor(color);
-            double direction = Math.atan2(speedY, speedX);
-            AffineTransform old = g2d.getTransform();
-            g2d.translate(x + size/2, y + size/2);
-            g2d.rotate(direction);
-            g2d.fillArc(-size/2, -size/2, size, size, 
-                (int)mouthAngle, 360 - 2 * (int)mouthAngle);
-            g2d.setTransform(old);
-        }
-    }
+        add(startpanel,0);
+        startpanel.setLocation(0,0);
+        startpanel.setVisible(false);
     
-    private class GhostEntity {
-        private double x, y;
-        private double speedX, speedY;
-        private int size;
-        private Color color;
-        
-        public GhostEntity(int x, int y, int size, Color color) {
-            this.x = x;
-            this.y = y;
-            this.size = size;
-            this.color = color;
-            this.speedX = random.nextDouble() * 3 - 1.5;
-            this.speedY = random.nextDouble() * 3 - 1.5;
-        }
-        
-        public void update() {
-            // Move ghost
-            x += speedX;
-            y += speedY;
-            
-            // Bounce off walls
-            if (x < 0 || x > WINDOW_WIDTH - size) speedX *= -1;
-            if (y < 0 || y > WINDOW_HEIGHT - size) speedY *= -1;
-            
-            // Random direction changes
-            if (random.nextFloat() < 0.02) {
-                speedX = random.nextDouble() * 3 - 1.5;
-                speedY = random.nextDouble() * 3 - 1.5;
+        try {
+            InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("res/gif/gameplay.gif");
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            int nRead;
+            byte[] data = new byte[16384];
+            while ((nRead = in.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
             }
+            
+            ImageIcon imageIcon = new ImageIcon(new ImageIcon(
+                    buffer.toByteArray()
+            ).getImage().getScaledInstance(getWidth(),getHeight(),Image.SCALE_DEFAULT));
+            
+            JLabel label = new JLabel(imageIcon);
+            add(label);
+            label.setBounds(0,0,getWidth(), getHeight());
+            
+        } catch(Exception e) {
+            e.printStackTrace();
         }
-        
-        public void draw(Graphics2D g2d) {
-            g2d.setColor(color);
-            
-            // Ghost body
-            g2d.fillArc((int)x, (int)y, size, size, 0, 180);
-            g2d.fillRect((int)x, (int)y + size/2, size, size/2);
-            
-            // Ghost skirt
-            int[] xPoints = {(int)x, (int)x + size/6, (int)x + size/3, (int)x + size/2, 
-                           (int)x + 2*size/3, (int)x + 5*size/6, (int)x + size};
-            int[] yPoints = {(int)y + size, (int)y + size - size/6, (int)y + size, 
-                           (int)y + size - size/6, (int)y + size, (int)y + size - size/6, (int)y + size};
-            g2d.fillPolygon(xPoints, yPoints, 7);
-            
-            // Ghost eyes
-            g2d.setColor(Color.WHITE);
-            g2d.fillOval((int)x + size/4, (int)(y + size/3), size/4, size/4);
-            g2d.fillOval((int)x + size/2, (int)(y + size/3), size/4, size/4);
-            g2d.setColor(Color.BLACK);
-            g2d.fillOval((int)x + size/3, (int)(y + size/2.5), size/8, size/8);
-            g2d.fillOval((int)x + 5*size/8, (int)(y + size/2.5), size/8, size/8);
-        }
+ pratikshya
+        setVisible(true);
+=======
 =======
     
         setUndecorated(true);
@@ -637,6 +509,7 @@ public class MainMenu extends JFrame {
             e.printStackTrace();
         }
         setVisible(true);
+ main
  main
     }
     
@@ -704,71 +577,74 @@ public class MainMenu extends JFrame {
         exit_button = new JButton();
 
         //======== this ========
-        setTitle("Pacman Game");
+        setTitle("SwingPacman");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
-        setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+        setMinimumSize(null);
         var contentPane = getContentPane();
         contentPane.setLayout(null);
 
         //======== main_panel ========
         {
             main_panel.setBackground(new Color(0, 0, 0, 170));
-            main_panel.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-            main_panel.setMaximumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-            main_panel.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+            main_panel.setPreferredSize(null);
+            main_panel.setMaximumSize(null);
+            main_panel.setMinimumSize(null);
             main_panel.setLayout(null);
 
             //---- title ----
-            title.setText("PACMAN");
-            title.setFont(Media.getFont(EFont.regular).deriveFont(Font.BOLD, 64f));
-            title.setForeground(THEME_YELLOW);
+            title.setText("SwingPacman");
+            title.setFont(new Font(Font.SANS_SERIF, title.getFont().getStyle(), title.getFont().getSize() + 32));
+            title.setForeground(Color.yellow);
+            title.setMaximumSize(null);
+            title.setMinimumSize(null);
+            title.setPreferredSize(null);
             title.setHorizontalAlignment(SwingConstants.CENTER);
             main_panel.add(title);
-            title.setBounds(WINDOW_WIDTH/2 - 250, 50, 500, 80);
+            title.setBounds(0, 55, 400, title.getPreferredSize().height);
 
             //---- github_button ----
             github_button.setText("GitHub");
             github_button.setBackground(new Color(0, 0, 27));
-            github_button.setForeground(THEME_MAGENTA);
-            github_button.setFont(Media.getFont(EFont.regular).deriveFont(Font.BOLD, 20f));
-            github_button.setBorder(new LineBorder(THEME_YELLOW, 2, true));
+            github_button.setForeground(new Color(204, 0, 204));
+            github_button.setFont(github_button.getFont().deriveFont(github_button.getFont().getStyle() | Font.BOLD));
+            github_button.setBorder(new LineBorder(Color.yellow, 2, true));
             github_button.setContentAreaFilled(false);
             main_panel.add(github_button);
-            github_button.setBounds(WINDOW_WIDTH - 150, WINDOW_HEIGHT - 80, 120, 50);
+            github_button.setBounds(305, 345, 87, 45);
 
             //---- play_button ----
             play_button.setText("PLAY");
             play_button.setBackground(new Color(0, 0, 27));
-            play_button.setBorder(new LineBorder(THEME_YELLOW, 2, true));
-            play_button.setFont(Media.getFont(EFont.regular).deriveFont(Font.BOLD, 32f));
-            play_button.setForeground(THEME_PINK);
+            play_button.setBorder(new LineBorder(Color.yellow, 2, true));
+            play_button.setFont(play_button.getFont().deriveFont(play_button.getFont().getStyle() | Font.BOLD, play_button.getFont().getSize() + 6f));
+            play_button.setForeground(new Color(255, 0, 204));
             play_button.setContentAreaFilled(false);
+            play_button.setPreferredSize(null);
+            play_button.setMaximumSize(null);
+            play_button.setMinimumSize(null);
             main_panel.add(play_button);
-            play_button.setBounds(WINDOW_WIDTH/2 - 150, 250, 300, 60);
+            play_button.setBounds(100, 160, 205, 45);
 
             //---- exit_button ----
             exit_button.setText("EXIT");
             exit_button.setBackground(new Color(0, 0, 27));
-            exit_button.setForeground(THEME_PINK);
-            exit_button.setFont(Media.getFont(EFont.regular).deriveFont(Font.BOLD, 32f));
-            exit_button.setBorder(new LineBorder(THEME_YELLOW, 2, true));
+            exit_button.setForeground(new Color(255, 0, 204));
+            exit_button.setFont(exit_button.getFont().deriveFont(exit_button.getFont().getStyle() | Font.BOLD, exit_button.getFont().getSize() + 6f));
+            exit_button.setBorder(new LineBorder(Color.yellow, 2, true));
             exit_button.setContentAreaFilled(false);
+            exit_button.setPreferredSize(null);
+            exit_button.setMaximumSize(null);
+            exit_button.setMinimumSize(null);
             main_panel.add(exit_button);
-            exit_button.setBounds(WINDOW_WIDTH/2 - 150, 350, 300, 60);
-
-            // DEBUG LABEL
-            JLabel debugLabel = new JLabel("DEBUG: MAIN MENU VISIBLE");
-            debugLabel.setForeground(Color.RED);
-            debugLabel.setFont(new Font("Arial", Font.BOLD, 32));
-            debugLabel.setBounds(10, 10, 500, 50);
-            main_panel.add(debugLabel);
+            exit_button.setBounds(100, 220, 205, 45);
         }
         contentPane.add(main_panel);
-        main_panel.setBounds(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        main_panel.setBounds(0, 0, 400, 400);
 
-        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        setLocationRelativeTo(null);
+        contentPane.setPreferredSize(new Dimension(400, 425));
+        setSize(400, 425);
+        setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
