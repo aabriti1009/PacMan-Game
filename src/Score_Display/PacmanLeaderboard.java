@@ -92,12 +92,12 @@ public class PacmanLeaderboard extends JFrame {
         upButton.setForeground(Color.BLACK);
         upButton.setBorderPainted(false);
         upButton.setFocusPainted(false);
-        upButton.setFont(new Font("Monospaced", Font.BOLD, 24));
+        upButton.setFont(new Font("Times New Roman", Font.BOLD, 24));
         downButton.setBackground(Color.WHITE);
         downButton.setForeground(Color.BLACK);
         downButton.setBorderPainted(false);
         downButton.setFocusPainted(false);
-        downButton.setFont(new Font("Monospaced", Font.BOLD, 24));
+        downButton.setFont(new Font("Times New Roman", Font.BOLD, 24));
         add(upButton);
         add(downButton);
         updateScrollButtons();
@@ -147,9 +147,9 @@ public class PacmanLeaderboard extends JFrame {
         try {
             // Try to load a pixel font from resources (add your .ttf to resources if available)
             // For now, fallback to Monospaced bold
-            pixelFont = new Font("Monospaced", Font.BOLD, 28);
+            pixelFont = new Font("Times New Roman", Font.BOLD, 28);
         } catch (Exception e) {
-            pixelFont = new Font("Monospaced", Font.BOLD, 28);
+            pixelFont = new Font("Times New Roman", Font.BOLD, 28);
         }
     }
 
