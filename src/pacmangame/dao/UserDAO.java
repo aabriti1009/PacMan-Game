@@ -15,7 +15,7 @@ public class UserDAO{
     private static final String DB_URL = "jdbc:mysql://localhost:3306/pacman_game";
     private static final String USER ="root";
     private static final String PASS = "pratikshya123";
-    private static final String TABLE_NAME = "userspacman";
+    private static final String TABLE_NAME = "users";
     
     public UserDAO(){
         try{
@@ -65,7 +65,7 @@ public class UserDAO{
         }
     }
 
-    public boolean registerUser(User user){
+    public boolean registerUser(User user) {
         // First check if email already exists
         if (isEmailExists(user.getEmail())) {
             JOptionPane.showMessageDialog(null, 
@@ -84,15 +84,13 @@ public class UserDAO{
             return false;
         }
         
-        String sql = "INSERT INTO " + TABLE_NAME + " (username,email,password) VALUES (?,?,?)";
-        try(Connection conn = DriverManager.getConnection(DB_URL,USER,PASS);
-                PreparedStatement pstmt = conn.prepareStatement(sql)){
-            
-            pstmt.setString(1, user.getUserName());
-            pstmt.setString(2, user.getEmail());
-            pstmt.setString(3, user.getPassword());
-            
-            int rowsAffected = pstmt.executeUpdate();
+        String query = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, user.getUserName());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPassword());
+            int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
                 return true;
             } else {
@@ -102,7 +100,6 @@ public class UserDAO{
                     JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-                
         } catch (SQLException e) {
             String errorMessage = "Registration failed.\n";
             if (e.getErrorCode() == 1062) { // MySQL duplicate entry error code
@@ -120,6 +117,7 @@ public class UserDAO{
             return false;
         }
     }
+
     public boolean isUsernameExists(String username){
         String sql = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE username = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL,USER,PASS);
@@ -157,11 +155,78 @@ public class UserDAO{
         }
         return false;
     }
-        
-        
     
+    /**
+     * Finds a user by username
+     * @param username the username to search for
+     * @return User object if found, null otherwise
+     */
+    public User findByUsername(String username) {
+        System.out.println("Searching for user: " + username);
+        String query = "SELECT * FROM users WHERE username = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                System.out.println("User found: " + username);
+                return new User(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getInt("games_played"),
+                    rs.getInt("high_score"),
+                    rs.getLong("total_score")
+                );
+            } else {
+                System.out.println("User not found: " + username);
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error while searching for user: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-    
+    public boolean updateUserStats(User user) {
+        String query = "UPDATE users SET games_played = ?, high_score = ?, total_score = ? WHERE username = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, user.getGamesPlayed());
+            stmt.setInt(2, user.getHighScore());
+            stmt.setLong(3, user.getTotalScore());
+            stmt.setString(4, user.getUserName());
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public java.util.List<User> getAllUsers() {
+        java.util.List<User> users = new java.util.ArrayList<>();
+        String query = "SELECT * FROM users";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                users.add(new User(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getInt("games_played"),
+                    rs.getInt("high_score"),
+                    rs.getLong("total_score")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
 }
 
    

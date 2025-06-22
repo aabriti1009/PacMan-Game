@@ -44,7 +44,7 @@ public class MainMenu extends JFrame {
         int size = Math.min(screenSize.height, screenSize.width);
         Scaler.setNewsize(size);
         
-        setTitle("SwingPacman - MENU");
+        setTitle("Pacman - MENU");
         setIconImage(Media.getImg(EImage.pacman_right_1));
         
         initComponents();
@@ -54,36 +54,18 @@ public class MainMenu extends JFrame {
     
         startpanel = new StartGamePanel(this.getWidth(),  this);
         
-        github_button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                BlinkAnimator blinkAnimator = new BlinkAnimator(github_button,80,true);
-                blinkAnimator.start();
-                AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
-                    @Override
-                    public void callback() {
-                        blinkAnimator.stop();
-                        try{
-                            openWebpage(new URI("https://github.com/AlbertCerfeda/SwingPacman"));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
         exit_button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                     BlinkAnimator blinkAnimator = new BlinkAnimator(exit_button,80,true);
                     blinkAnimator.start();
-                    AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
-                        @Override
-                        public void callback(){
+                    // AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
+                    //     @Override
+                    //     public void callback(){
                             blinkAnimator.stop();
                             System.exit(0);
-                        }
-                    });
+                    //     }
+                    // });
                 }
             
         });
@@ -92,13 +74,13 @@ public class MainMenu extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 BlinkAnimator blinkAnimator = new BlinkAnimator(play_button,80,true);
                 blinkAnimator.start();
-                AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
-                    @Override
-                    public void callback() {
+                // AudioEngine.play(EAudio.button_click, PlaybackMode.regular, new FunctionCallback() {
+                //     @Override
+                //     public void callback() {
                         blinkAnimator.stop();
                         showNewGamepanel();
-                    }
-                });
+                //     }
+                // });
             }
         });
     
@@ -107,7 +89,8 @@ public class MainMenu extends JFrame {
         add(startpanel,0);
         startpanel.setLocation(0,0);
         startpanel.setVisible(false);
-    
+
+        /*
         try {
             InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("res/gif/gameplay.gif");
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -128,6 +111,13 @@ public class MainMenu extends JFrame {
         } catch(Exception e) {
             e.printStackTrace();
         }
+        */
+        
+        // Set a black background as a fallback
+        getContentPane().setBackground(Color.BLACK);
+
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
     
@@ -157,6 +147,15 @@ public class MainMenu extends JFrame {
         startpanel.setVisible(true);
     }
     
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        g.setColor(Color.BLACK);
+        g.fillRect(0,0, getWidth(), getHeight());
+        main_panel.repaint();
+        startpanel.repaint();
+    }
+    
     
     
     public void adjustSizes() {
@@ -178,23 +177,17 @@ public class MainMenu extends JFrame {
         exit_button.setBounds(Scaler.scale(exit_button.getX()), Scaler.scale(exit_button.getY()), Scaler.scale(exit_button.getWidth()),Scaler.scale(exit_button.getHeight()));
         exit_button.setBorder(BorderFactory.createLineBorder(Color.yellow, Scaler.scale(3)));
         exit_button.setOpaque(true);
-        
-        github_button.setFont(Media.getFont(EFont.regular).deriveFont(Font.PLAIN, (int) Scaler.scale(github_button.getFont().getSize())));
-        github_button.setBounds(Scaler.scale(github_button.getX()), Scaler.scale(github_button.getY()), Scaler.scale(github_button.getWidth()),Scaler.scale(github_button.getHeight()));
-        github_button.setBorder(BorderFactory.createLineBorder(Color.yellow, Scaler.scale(3)));
-        github_button.setOpaque(true);
     }
     
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         main_panel = new JPanel();
         title = new JLabel();
-        github_button = new JButton();
         play_button = new JButton();
         exit_button = new JButton();
 
         //======== this ========
-        setTitle("SwingPacman");
+        setTitle("Pacman");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
         setMinimumSize(null);
@@ -203,7 +196,7 @@ public class MainMenu extends JFrame {
 
         //======== main_panel ========
         {
-            main_panel.setBackground(new Color(0, 0, 0, 170));
+            main_panel.setBackground(new Color(0, 0, 0, 0)); // Make panel transparent
             main_panel.setPreferredSize(null);
             main_panel.setMaximumSize(null);
             main_panel.setMinimumSize(null);
@@ -219,16 +212,6 @@ public class MainMenu extends JFrame {
             title.setHorizontalAlignment(SwingConstants.CENTER);
             main_panel.add(title);
             title.setBounds(0, 55, 400, title.getPreferredSize().height);
-
-            //---- github_button ----
-            github_button.setText("GitHub");
-            github_button.setBackground(new Color(0, 0, 27));
-            github_button.setForeground(new Color(204, 0, 204));
-            github_button.setFont(github_button.getFont().deriveFont(github_button.getFont().getStyle() | Font.BOLD));
-            github_button.setBorder(new LineBorder(Color.yellow, 2, true));
-            github_button.setContentAreaFilled(false);
-            main_panel.add(github_button);
-            github_button.setBounds(305, 345, 87, 45);
 
             //---- play_button ----
             play_button.setText("PLAY");
@@ -268,7 +251,6 @@ public class MainMenu extends JFrame {
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     private JPanel main_panel;
     private JLabel title;
-    private JButton github_button;
     private JButton play_button;
     private JButton exit_button;
     // JFormDesigner - End of variables declaration  //GEN-END:variables

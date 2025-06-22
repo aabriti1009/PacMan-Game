@@ -2,175 +2,224 @@ package Entities;
 
 import AnimationEngine.BlinkAnimator;
 import Game.Game;
-import Map.EDirection;
-import Map.Edge;
-import Map.Node;
+import Map.Map;
 import Media.EImage;
 import Settings.EParam;
 import Settings.Settings;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.List;
 
 /**
  * An enemy Ghost.
  */
 public class Ghost extends MovingEntity {
     
-    EGhostType type;
+    private enum GhostMode { CHASE, SCATTER, VULNERABLE }
+    private GhostMode currentMode = GhostMode.SCATTER;
+
+    private EGhostType type;
     private static boolean vulnerable = false;
-    
-    private LinkedList<EDirection> priorityQueue = new LinkedList<>();
-    
     private boolean dead = false;
-    
+    private final Point homePosition;
+    private final Point scatterTarget;
+    private Timer modeTimer;
+
     /**
      * Initializes a Ghost object.
-     * @param location the Edge where the ghost is located.
      */
-    public Ghost(Edge location, EGhostType ghost) {
-        super(null, location, EDirection.DOWN, (int)Settings.get(EParam.ghost_speed));
-        type = ghost;
+    public Ghost(int col, int row, Map map, EGhostType ghost) {
+        super(col, row, map, ((Double) Settings.get(EParam.ghost_speed)).intValue());
+        this.type = ghost;
+        this.homePosition = new Point(col, row);
+        this.scatterTarget = getScatterTargetForType(ghost, map);
+        setupModeTimer();
+        updateAnimation();
+    }
+
+    private Point getScatterTargetForType(EGhostType type, Map map) {
+        int rows = map.getMapLayout().length;
+        int cols = map.getMapLayout()[0].length;
+        switch (type) {
+            case ghost1: return new Point(1, 1); // Top-left
+            case ghost2: return new Point(cols - 2, 1); // Top-right
+            case ghost3: return new Point(1, rows - 2); // Bottom-left
+            case ghost4: return new Point(cols - 2, rows - 2); // Bottom-right
+            default: return new Point(1, 1);
+        }
+    }
+
+    private void setupModeTimer() {
+        modeTimer = new Timer(7000, e -> { // Switch mode every 7 seconds
+            if (currentMode == GhostMode.CHASE) {
+                currentMode = GhostMode.SCATTER;
+            } else {
+                currentMode = GhostMode.CHASE;
+            }
+        });
+        modeTimer.setRepeats(true);
+        modeTimer.start();
+    }
+
+    /**
+     * Called every game tick to update the Ghost's state.
+     */
+    public void update() {
+        if (dead) return;
+
+        if (vulnerable) {
+            currentMode = GhostMode.VULNERABLE;
+        } else if (currentMode == GhostMode.VULNERABLE) {
+            currentMode = GhostMode.CHASE; // Revert after vulnerability ends
+        }
+
+        calculateNextDirection();
+        move();
+    }
+
+    private void calculateNextDirection() {
+        Point target;
+        switch (currentMode) {
+            case SCATTER:
+                target = scatterTarget;
+                break;
+            case VULNERABLE: // Fleeing logic
+                Pacman pacman = Game.gamestate().getPacman();
+                if (pacman != null) {
+                    Point pacmanPos = pacman.getGridPosition();
+                    fleeFrom(pacmanPos);
+                }
+                return;
+            case CHASE:
+            default:
+                pacman = Game.gamestate().getPacman();
+                target = (pacman != null) ? pacman.getGridPosition() : homePosition;
+                break;
+        }
+        chaseTarget(target);
+    }
+    
+    private void chaseTarget(Point target) {
+        double bestDistance = -1;
+        Direction bestDirection = Direction.NONE;
+        List<Direction> possibleDirections = getValidDirections();
+
+        for (Direction dir : possibleDirections) {
+            Point nextPos = getNextCellInDir(dir);
+            double distance = target.distanceSq(nextPos);
+            if (bestDistance == -1 || distance < bestDistance) {
+                bestDistance = distance;
+                bestDirection = dir;
+            }
+        }
+        setNextDirection(bestDirection);
+    }
+
+    private void fleeFrom(Point target) {
+        double bestDistance = -1;
+        Direction bestDirection = Direction.NONE;
+        List<Direction> possibleDirections = getValidDirections();
+
+        for (Direction dir : possibleDirections) {
+            Point nextPos = getNextCellInDir(dir);
+            double distance = target.distanceSq(nextPos);
+            if (bestDistance == -1 || distance > bestDistance) {
+                bestDistance = distance;
+                bestDirection = dir;
+            }
+        }
+        setNextDirection(bestDirection);
+    }
+
+    private List<Direction> getValidDirections() {
+        List<Direction> validDirections = new ArrayList<>();
+        Direction oppositeDirection = getOppositeDirection(currentDirection);
+
+        for (Direction dir : Direction.values()) {
+            if (dir == Direction.NONE || dir == oppositeDirection) {
+                continue;
+            }
+            Point nextPos = getNextCellInDir(dir);
+            if (!map.isWall(nextPos.y, nextPos.x)) {
+                validDirections.add(dir);
+            }
+        }
         
-        // Chooses the respective image for the ghost
-        resetGhostImg();
+        if (validDirections.isEmpty()) {
+            // If stuck, allow reversal
+            Point nextPos = getNextCellInDir(oppositeDirection);
+            if (oppositeDirection != Direction.NONE && !map.isWall(nextPos.y, nextPos.x)) {
+                validDirections.add(oppositeDirection);
+            }
+        }
         
+        return validDirections;
+    }
+    
+    private Point getNextCellInDir(Direction dir) {
+        int newCol = gridPosition.x;
+        int newRow = gridPosition.y;
+
+        switch (dir) {
+            case UP: newRow--; break;
+            case DOWN: newRow++; break;
+            case LEFT: newCol--; break;
+            case RIGHT: newCol++; break;
+            default: break;
+        }
+        return new Point(newCol, newRow);
+    }
+    
+    private Direction getOppositeDirection(Direction dir) {
+        switch (dir) {
+            case UP: return Direction.DOWN;
+            case DOWN: return Direction.UP;
+            case LEFT: return Direction.RIGHT;
+            case RIGHT: return Direction.LEFT;
+            default: return Direction.NONE;
+        }
+    }
+
+    private void updateAnimation() {
+        if (vulnerable) {
+            setImage(EImage.ghost_vuln);
+        } else {
+            switch(type) {
+                case ghost1: setImage(EImage.ghost1_left); break;
+                case ghost2: setImage(EImage.ghost2_right); break;
+                case ghost3: setImage(EImage.ghost3_right); break;
+                default: setImage(EImage.ghost4_right); break;
+            }
+        }
         getInitialAnimationFrame();
     }
     
-    /**
-     * Handles the complete removal of the Ghost from the game.
-     */
     @Override
     public void removeSprite() {
         super.removeSprite();
         Game.gamestate().removeGhost(this);
     }
-    
-    /**
-     * To be called when the Ghost collides with another Entity.
-     * @param e the Entity the Ghost collided with
-     */
-    @Override
-    public void onCollision(Entity e) {
-    
-    }
-    
-    @Override
-    public void step() {
-        if (!dead)
-            super.step();
-    }
-    
-    /**
-     * Unqueues a turn from the queue and tries to perform it on the Node.
-     * @param n The Node to perform the turn on.
-     */
- @Override
-    public void makeTurn(Node n) {
-        // If there is priority queue unqueue that one,
-        // otherwise super.makeTurn()
-        if (priorityQueue.isEmpty()) {
-            super.makeTurn(n);
-        }else if (n.canTurn(priorityQueue.getFirst())) {
-            setDirection(priorityQueue.getFirst());
-            setCurrEdge(n.getTurn(priorityQueue.removeFirst()));
-        }else {
-            priorityQueue.removeFirst();
-        }
-        
-    }
-    
-    /**
-     * Handles the decision-making when it comes to choosing which turn to perform next.
-     * @param direction used by Pacman to manually add a turn
-     */
-    @Override
-    public void addTurn(EDirection direction) {
-        // TODO: Implement if close to pacman
-        //          1. If not vulnerable
-        //                  tries to get closer to Pacman
-        //          2. If vulnerable
-        //                  tries to get away from Pacman
-        //      otherwise a random one
-        
-        if (getCurrEdge().isAtExtremes(this)) {
-            // The possible turns to be performed on the Node
-            ArrayList<EDirection> possible_turns = getCurrEdge().getExtreme(this).getPossibleTurns();
-            
-            // The inverse of the current Ghost direction
-            EDirection inverse = null;
-            if(getDirection()!=null) {
-                switch(getDirection()) {
-                    case UP:
-                        inverse = EDirection.DOWN;
-                        break;
-                    case DOWN:
-                        inverse = EDirection.UP;
-                        break;
-                    case LEFT:
-                        inverse = EDirection.RIGHT;
-                        break;
-                    default: // RIGHT
-                        inverse = EDirection.LEFT;
-                        break;
-                }
-            }
-            
-            // Removes the inverse of the direction from the possible turns,
-            //  to eliminate the strange behaviour of going back at a turn.
-            if (possible_turns.size()>1)
-                possible_turns.remove(inverse);
-            
-            // Chooses a random turn to add to the queue
-            Random r = new Random();
-            turnQueue.add(possible_turns.get(new Random().nextInt(possible_turns.size())));
-        }
-    }
 
     public void setVulnerable(boolean to) {
         vulnerable = to;
         if (vulnerable) {
-            setImage(EImage.ghost_vuln);
-            setSpeed(((int)Settings.get(EParam.ghost_vuln_speed)));
+            currentMode = GhostMode.VULNERABLE;
+            setSpeed(((Double)Settings.get(EParam.ghost_vuln_speed)).intValue());
         } else {
-            resetGhostImg();
-            setSpeed((int)Settings.get(EParam.ghost_speed));
+            currentMode = GhostMode.CHASE;
+            setSpeed(((Double)Settings.get(EParam.ghost_speed)).intValue());
         }
+        updateAnimation();
     }
 
-    /**
-     * Sets the Ghost image accordingly to the type of the ghost
-     */
-    public void resetGhostImg() {
-        EImage img;
-        switch(type) {
-            case ghost1:
-                img = EImage.ghost1_left;
-                break;
-            case ghost2:
-                img = EImage.ghost2_right;
-                break;
-            case ghost3:
-                img = EImage.ghost3_right;
-                break;
-            default:
-                img = EImage.ghost4_right;
-                break;
-        }
-        setImage(img);
-    }
-    
-    ////////////////
- //Setters and getters below
-    
     public void die() {
         dead = true;
-        setColliding(false);
+        this.gridPosition.setLocation(homePosition);
+        updatePixelPosition();
         
         BlinkAnimator b = new BlinkAnimator(this, 100, true);
         b.start();
@@ -179,9 +228,10 @@ public class Ghost extends MovingEntity {
             public void actionPerformed(ActionEvent e) {
                 dead = false;
                 b.stop();
-                setColliding(true);
+                updateAnimation();
             }
         });
+        t.setRepeats(false);
         t.start();
     }
     
@@ -189,15 +239,7 @@ public class Ghost extends MovingEntity {
         return type;
     }
     
-    @Override
-    public void resetEntity() {
-        super.resetEntity();
-        priorityQueue = new LinkedList<>();
-    }
-    
     public static boolean isVulnerable(){
         return vulnerable;
     }
-
-
 }
